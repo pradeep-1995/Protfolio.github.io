@@ -520,7 +520,16 @@
 		  } catch (error) {
 			  // Handle errors (e.g., API not reachable)
 			  console.error("Error fetching quote:", error);
-			  addMessage("Bot", "Sorry, I couldn't fetch a quote right now.");
+			  const quotes = [
+        "The only way to do great work is to love what you do. - Steve Jobs",
+        "Success usually comes to those who are too busy to be looking for it. - Henry David Thoreau",
+        "Don’t be afraid to give up the good to go for the great. - John D. Rockefeller",
+        "Believe you can and you're halfway there. - Theodore Roosevelt",
+        "Act as if what you do makes a difference. It does. - William James"
+      ];
+      const randomQuote = quotes[Math.floor(Math.random() * quotes.length)];
+            addMessage("Bot", "Sorry, Server Bussy !!");
+            addMessage("Bot", randomQuote);
 		  }
 		  
 		
