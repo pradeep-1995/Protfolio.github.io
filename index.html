@@ -445,6 +445,120 @@
 			<script src="assets/js/util.js"></script>
 			<script src="assets/js/main.js"></script>
 
+
+
+		<!-- Chatbot Toggle Button -->
+	<button id="chatbot-button">💬</button>
+
+	<!-- Chatbot Window -->
+	<div id="chatbot-window">
+		<div id="chatbot-header">Chat with Me!</div>
+		<div id="chatbot-content">
+			<p>Ask anything about me !!!!</p>
+		</div>
+  
+		<!-- Chatbot Options Dropdown -->
+		<select id="chatbot-options">
+			<option value="">Select an option...</option>
+			<option value="about">About Me</option>
+			<option value="projects">Projects</option>
+			<option value="contact">Contact Info</option>
+		</select>
+  
+		<input type="text" id="chatbot-input" placeholder="Type your message..." />
+		<button id="chatbot-send">➤</button>
+	</div>
+  
+	<script>
+		// Get elements
+		const chatbotButton = document.getElementById("chatbot-button");
+		const chatbotWindow = document.getElementById("chatbot-window");
+		const chatbotSend = document.getElementById("chatbot-send");
+		const chatbotContent = document.getElementById("chatbot-content");
+		const chatbotInput = document.getElementById("chatbot-input");
+		const chatbotOptions = document.getElementById("chatbot-options");
+  
+		// Toggle chatbot window
+		chatbotButton.addEventListener("click", () => {
+		  chatbotWindow.style.display = chatbotWindow.style.display === "block" ? "none" : "block";
+		});
+  
+		// Function to add message to chatbot content
+		function addMessage(sender, message) {
+			const msgElem = document.createElement("p");
+			msgElem.textContent = `${sender}: ${message}`;
+			msgElem.style.fontWeight = sender === "You" ? "bold" : "normal";
+			chatbotContent.appendChild(msgElem);
+			chatbotContent.scrollTop = chatbotContent.scrollHeight;
+		}
+  
+		// Send button functionality
+		chatbotSend.addEventListener("click",async () => {
+			const userMessage = chatbotInput.value.trim();
+			if (userMessage) {
+				addMessage("You", userMessage);
+			
+		  try {
+			  // For Question Answering
+			  const qaApiResponse = await fetch("http://127.0.0.1:8000/question-answer", {
+				  method: "POST",
+				  headers: { "Content-Type": "application/json" },
+				  body: JSON.stringify({ question: userMessage }) // Aligning with backend
+			  });
+			  const qaData = await qaApiResponse.json();
+			  const qaResponse = qaData.answer;
+			  addMessage("Bot", qaResponse);
+  
+			  
+			  // Call the Python API to get a quote
+			  const response = await fetch("http://127.0.0.1:8000/generate-quote");
+			  const data = await response.json();
+			  const botMessage = data.quote;
+			  addMessage("Bot", botMessage);
+  
+			  
+		  } catch (error) {
+			  // Handle errors (e.g., API not reachable)
+			  console.error("Error fetching quote:", error);
+			  addMessage("Bot", "Sorry, I couldn't fetch a quote right now.");
+		  }
+		  
+		
+		  // Clear the input field
+		  chatbotInput.value = "";
+			}
+		});
+  
+  
+		 
+  
+		// Select option functionality
+		chatbotOptions.addEventListener("change", () => {
+			const selectedOption = chatbotOptions.value;
+			if (selectedOption) {
+				let botResponse = "";
+				switch (selectedOption) {
+					case "about":
+						botResponse = "I am Pradeep Parida, a Data Scientist with experience in Data Science, Analysis, and Sales Engineering.";
+						break;
+					case "projects":
+						botResponse = "Here are some projects I've worked on: ";
+						break;
+					case "contact":
+						botResponse = "You can reach me at pradeepparida919@gmail.com.";
+						break;
+					default:
+						botResponse = "Please select an option.";
+				}
+				addMessage("You", chatbotOptions.options[chatbotOptions.selectedIndex].text);
+				addMessage("Bot", botResponse);
+				chatbotOptions.value = ""; // Reset dropdown
+			}
+		});
+	</script>
+
+
+		
 	</body>
 </html>
 
@@ -506,4 +620,67 @@
     color: #f1c40f; /* Change the color of the icon */
   }
 
+
+
+/* Chatbot Button */
+  #chatbot-button {
+        position: fixed;
+				bottom: 20px;
+				right: 20px;
+				background-color: linear-gradient(135deg, #6a11cb, #ce9313);
+				color: white;
+				border: none;
+				padding: 15px;
+				border-radius: 50%;
+				cursor: pointer;
+				font-size: 58px;
+				box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+				z-index: 1000;
+      }
+      /* Chatbot Window */
+      #chatbot-window {
+          display: none;
+          position: fixed;
+          bottom: 120px;
+          right: 60px;
+          width: 800px;
+          background-color: #fff;
+          box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+          border-radius: 8px;
+          overflow: hidden;
+      }
+      #chatbot-header {
+          background-color: #db7734;
+          color: #fff;
+          padding: 10px;
+          text-align: center;
+          font-weight: bold;
+      }
+      #chatbot-content {
+          max-height: 200px;
+          padding: 5px;
+          overflow-y: auto;
+          font-size: 20px;
+          color: #000000;
+      }
+      #chatbot-options, #chatbot-input, #chatbot-send {
+          width: 100%;
+          padding: 10px;
+          border: none;
+          outline: none;
+      }
+      #chatbot-options {
+          background-color: #f9f9f9;
+      }
+      #chatbot-input {
+          border-top: 1px solid #ddd;
+      }
+      #chatbot-send {
+          background-color: #3498db;
+          color: white;
+          cursor: pointer;
+      }	
+
+
+	
 </style>
